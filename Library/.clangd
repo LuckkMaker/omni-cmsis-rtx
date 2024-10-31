@@ -1,0 +1,4 @@
+CompileFlags:
+  CompilationDatabase: >-
+    e:\workspaces\Project\github\embedded\omni-cmsis-rtx\Library\out\RTX_Library\ARMv6M\Library
+  Add: []
