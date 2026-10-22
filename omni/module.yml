@@ -1,0 +1,5 @@
+name: cmsis_rtx
+build:
+  cmake: .
+  kconfig: Kconfig
+enable: CMSIS_RTX
