@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<package schemaVersion="1.7.36" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.36/schema/PACK.xsd">
+<package schemaVersion="1.7.54" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.54/schema/PACK.xsd">
   <name>CMSIS-RTX</name>
-  <description>RTX RTOS implementation of CMSIS-RTOS2 API</description>
+  <description overview="Overview/README.md">Keil RTX5 RTOS implementation of CMSIS-RTOS2 API</description>
   <vendor>ARM</vendor>
   <license>LICENSE</license>
   <licenseSets>
@@ -11,10 +11,35 @@
     </licenseSet>
   </licenseSets>
   <url>https://www.keil.com/pack/</url>
+  <repository type="git">https://github.com/ARM-software/CMSIS-RTX.git</repository>
 
   <releases>
-    <release version="1.0.0">
-        Initial pack release ...
+    <release version="5.9.1" date="2026-02-10" tag="v5.9.1">
+      Maintenance release of pack shipping RTX5 RTOS implementation for CMSIS-RTOS2 API.
+      Changes since RTX 5.9.0:
+      - Add support for Dsecure="Secure-only".
+      - Add default name for Idle and Timer thread.
+      - Change "Default Processor mode for Thread execution" to Privileged mode.
+      - Update examples.
+    </release>
+    <release version="5.9.0" date="2024-05-16" tag="v5.9.0">
+      - Enhance conditions to support Cortex-M52
+      - Remove dependency on Device:Startup component
+    </release>
+    <release version="5.8.0" date="2023-12-19" tag="v5.8.0">
+      First release of separate pack shipping RTX5 RTOS implementation for CMSIS-RTOS2 API.
+      Changes since RTX 5.5.4:
+      - Based on CMSIS-RTOS API V2.3.0 (processor affinity not supported).
+      - Added support for Process Isolation: MPU Protected Zones, Safety Classes, Thread Watchdogs.
+      - Requires CMSIS:OS Tick:SysTick component.
+      - Reduced component variants: Library (Library_NS replacement), Source (Source_NS replacement).
+      - Libraries for Arm Compiler 6 built with default wchar and enums size.
+      - Added pre-built libraries for GCC, CLANG and IAR.
+      - Removed support for legacy Arm Compiler 5.
+      - Fixed osMessageQueueGetSpace when called from ISR after osMessageQueuePut and before returning from ISR.
+      - Added de-allocation of Arm C library thread data (libspace) when thread is terminated.
+      - Added Thread Entry wrapper (compatible with GDB stack unwind).
+      - Updated SysTick implementation for OS Tick (initial count value).
     </release>
   </releases>
 
@@ -35,6 +60,11 @@
       <description>TrustZone (Disabled)</description>
       <require Dtz="TZ"/>
       <require Dsecure="TZ-disabled"/>
+    </condition>
+    <condition id="TZ Secure Only">
+      <description>TrustZone (Secure Only)</description>
+      <require Dtz="TZ"/>
+      <require Dsecure="Secure-only"/>
     </condition>
     <condition id="TZ Secure">
       <description>TrustZone (Secure)</description>
@@ -144,6 +174,11 @@
       <description>Armv8-M architecture based device with TrustZone (Disabled)</description>
       <require condition="ARMv8-M Device"/>
       <require condition="TZ Disabled"/>
+    </condition>
+    <condition id="ARMv8-M Device with TZ Secure Only">
+      <description>Armv8-M architecture based device with TrustZone (Secure Only)</description>
+      <require condition="ARMv8-M Device"/>
+      <require condition="TZ Secure Only"/>
     </condition>
     <condition id="ARMv8-M Device with TZ Secure">
       <description>Armv8-M architecture based device with TrustZone (Secure)</description>
@@ -418,6 +453,7 @@
       <accept  condition="ARMv7-M Device"/>
       <accept  condition="ARMv8-M Device without TrustZone"/>
       <accept  condition="ARMv8-M Device with TZ Disabled"/>
+      <accept  condition="ARMv8-M Device with TZ Secure Only"/>
       <accept  condition="ARMv8-M Device with TZ Secure"/>
       <accept  condition="ARMv7-A Device"/>
       <require condition="Compiler"/>
@@ -435,7 +471,7 @@
   </conditions>
 
   <components>
-    <component Cclass="CMSIS" Cgroup="RTOS2" Csub="Keil RTX5" Cvariant="Library" Cversion="5.9.0" Capiversion="2.3.0" condition="RTX5">
+    <component Cclass="CMSIS" Cgroup="RTOS2" Csub="Keil RTX5" Cvariant="Library" Cversion="5.9.1" Capiversion="2.3.0" condition="RTX5">
       <description>CMSIS-RTOS2 RTX5 for Cortex-M, SC000, SC300 and Armv7-A (Library)</description>
       <RTE_Components_h>
         <!-- the following content goes into file 'RTE_Components.h' -->
@@ -453,7 +489,7 @@
         <file category="header"  name="Include/rtx_os.h"/>
 
         <!-- RTX configuration -->
-        <file category="header"  name="Config/RTX_Config.h"  attr="config"   version="5.6.0"/>
+        <file category="header"  name="Config/RTX_Config.h"  attr="config"   version="5.6.1"/>
         <file category="source"  name="Config/RTX_Config.c"  attr="config"   version="5.2.0"/>
         <file category="source"  name="Config/handlers.c"    attr="config"   version="5.1.0" condition="ARMv7-A Device"/>
 
@@ -509,7 +545,7 @@
         <file category="library" name="Library/IAR/RTX_V7A.a"        src="Source" condition="IAR ARMv7-A"/>
       </files>
     </component>
-    <component Cclass="CMSIS" Cgroup="RTOS2" Csub="Keil RTX5" Cvariant="Library" Cversion="5.9.0" Capiversion="2.3.0" condition="RTX5 NS">
+    <component Cclass="CMSIS" Cgroup="RTOS2" Csub="Keil RTX5" Cvariant="Library" Cversion="5.9.1" Capiversion="2.3.0" condition="RTX5 NS">
       <description>CMSIS-RTOS2 RTX5 for Armv8-M/Armv8.1-M Non-secure domain (Library)</description>
       <RTE_Components_h>
         <!-- the following content goes into file 'RTE_Components.h' -->
@@ -528,7 +564,7 @@
         <file category="header"  name="Include/rtx_os.h"/>
 
         <!-- RTX configuration -->
-        <file category="header"  name="Config/RTX_Config.h"  attr="config"   version="5.6.0"/>
+        <file category="header"  name="Config/RTX_Config.h"  attr="config"   version="5.6.1"/>
         <file category="source"  name="Config/RTX_Config.c"  attr="config"   version="5.2.0"/>
 
         <!-- RTX templates -->
@@ -568,7 +604,7 @@
         <file category="library" name="Library/IAR/RTX_V81MMFN.a"     src="Source" condition="IAR ARMv81-MML FP"/>
       </files>
     </component>
-    <component Cclass="CMSIS" Cgroup="RTOS2" Csub="Keil RTX5" Cvariant="Source" Cversion="5.9.0" Capiversion="2.3.0" condition="RTX5">
+    <component Cclass="CMSIS" Cgroup="RTOS2" Csub="Keil RTX5" Cvariant="Source" Cversion="5.9.1" Capiversion="2.3.0" condition="RTX5">
       <description>CMSIS-RTOS2 RTX5 for Cortex-M, SC000, SC300 and Armv7-A (Source)</description>
       <RTE_Components_h>
         <!-- the following content goes into file 'RTE_Components.h' -->
@@ -587,7 +623,7 @@
         <file category="header" name="Include/rtx_os.h"/>
 
         <!-- RTX configuration -->
-        <file category="header" name="Config/RTX_Config.h"  attr="config"   version="5.6.0"/>
+        <file category="header" name="Config/RTX_Config.h"  attr="config"   version="5.6.1"/>
         <file category="source" name="Config/RTX_Config.c"  attr="config"   version="5.2.0"/>
         <file category="source" name="Config/handlers.c"    attr="config"   version="5.1.0" condition="ARMv7-A Device"/>
 
@@ -634,7 +670,7 @@
         <file category="source" name="Source/IAR/irq_armv7a.s"   condition="IARASM ARMv7-A"/>
       </files>
     </component>
-    <component Cclass="CMSIS" Cgroup="RTOS2" Csub="Keil RTX5" Cvariant="Source" Cversion="5.9.0" Capiversion="2.3.0" condition="RTX5 NS">
+    <component Cclass="CMSIS" Cgroup="RTOS2" Csub="Keil RTX5" Cvariant="Source" Cversion="5.9.1" Capiversion="2.3.0" condition="RTX5 NS">
       <description>CMSIS-RTOS2 RTX5 for Armv8-M/Armv8.1-M Non-secure domain (Source)</description>
       <RTE_Components_h>
         <!-- the following content goes into file 'RTE_Components.h' -->
@@ -654,7 +690,7 @@
         <file category="header" name="Include/rtx_os.h"/>
 
         <!-- RTX configuration -->
-        <file category="header" name="Config/RTX_Config.h"  attr="config"   version="5.6.0"/>
+        <file category="header" name="Config/RTX_Config.h"  attr="config"   version="5.6.1"/>
         <file category="source" name="Config/RTX_Config.c"  attr="config"   version="5.2.0"/>
 
         <!-- RTX templates -->
@@ -702,7 +738,8 @@
       <description>CMSIS-RTOS2 Blinky example</description>
       <board name="uVision Simulator" vendor="Keil"/>
       <project>
-        <environment name="uv" load="Blinky.uvprojx"/>
+        <environment name="uv"        load="Blinky.uvprojx"/>
+        <environment name="csolution" load="Blinky.csolution.yml"/>
       </project>
       <attributes>
         <component Cclass="CMSIS" Cgroup="CORE"/>
@@ -715,7 +752,8 @@
       <description>CMSIS-RTOS2 Memory Pool Example</description>
       <board name="uVision Simulator" vendor="Keil"/>
       <project>
-        <environment name="uv" load="MemPool.uvprojx"/>
+        <environment name="uv"        load="MemPool.uvprojx"/>
+        <environment name="csolution" load="MemPool.csolution.yml"/>
       </project>
       <attributes>
         <component Cclass="CMSIS" Cgroup="CORE"/>
@@ -728,7 +766,8 @@
       <description>CMSIS-RTOS2 Message Queue Example</description>
       <board name="uVision Simulator" vendor="Keil"/>
       <project>
-        <environment name="uv" load="MsgQueue.uvprojx"/>
+        <environment name="uv"        load="MsgQueue.uvprojx"/>
+        <environment name="csolution" load="MsgQueue.csolution.yml"/>
       </project>
       <attributes>
         <component Cclass="CMSIS" Cgroup="CORE"/>
@@ -741,7 +780,8 @@
       <description>Bare-metal secure/non-secure example without RTOS</description>
       <board name="uVision Simulator" vendor="Keil"/>
       <project>
-        <environment name="uv" load="NoRTOS.uvmpw"/>
+        <environment name="uv"        load="NoRTOS.uvmpw"/>
+        <environment name="csolution" load="NoRTOS.csolution.yml"/>
       </project>
       <attributes>
         <component Cclass="CMSIS" Cgroup="CORE"/>
@@ -754,7 +794,8 @@
       <description>Secure/non-secure RTOS example with thread context management</description>
       <board name="uVision Simulator" vendor="Keil"/>
       <project>
-        <environment name="uv" load="RTOS.uvmpw"/>
+        <environment name="uv"        load="RTOS.uvmpw"/>
+        <environment name="csolution" load="RTOS.csolution.yml"/>
       </project>
       <attributes>
         <component Cclass="CMSIS" Cgroup="CORE"/>
@@ -767,7 +808,8 @@
       <description>Secure/non-secure RTOS example with security test cases and system recovery</description>
       <board name="uVision Simulator" vendor="Keil"/>
       <project>
-        <environment name="uv" load="RTOS_Faults.uvmpw"/>
+        <environment name="uv"        load="RTOS_Faults.uvmpw"/>
+        <environment name="csolution" load="RTOS_Faults.csolution.yml"/>
       </project>
       <attributes>
         <component Cclass="CMSIS" Cgroup="CORE"/>
