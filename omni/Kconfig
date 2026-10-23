@@ -1,16 +1,17 @@
 # CMSIS-RTOS2 的实现开关（API 本身由 CONFIG_CMSIS_RTOS_V2 打开）。
-# 工程显式写 CONFIG_CMSIS_RTX=y 或 CONFIG_CMSIS_FREERTOS=y。
+# 工程显式写 CONFIG_CMSIS_RTX=y；FreeRTOS 实现在 modules/cmsis-freertos/omni/Kconfig。
+#
+# 两个实现互斥：CMSIS_FREERTOS 带 `depends on !CMSIS_RTX`（符号跟着自己的模块走，
+# 不在本文件里重复定义，否则 omni modules generate 出来的 Kconfig.modules 会报
+# 符号重定义）。
 
 config CMSIS_RTX
     bool "RTX5 kernel as CMSIS-RTOS2 implementation"
-    depends on CMSIS_RTOS_V2
+    select CMSIS_RTOS_V2
+    select CMSIS_VIEW
     default n
     help
         Enable the RTX5 kernel as the CMSIS-RTOS2 implementation.
 
-config CMSIS_FREERTOS
-    bool "FreeRTOS with CMSIS-RTOS2 adapter"
-    depends on CMSIS_RTOS_V2
-    default n
-    help
-        Enable FreeRTOS with the CMSIS-RTOS2 adapter.
+        Also selects CMSIS_VIEW: rtx_evr.h includes "EventRecorder.h"
+        unconditionally, so the Event Recorder implementation must be present.
